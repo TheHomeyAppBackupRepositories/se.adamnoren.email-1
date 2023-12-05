@@ -1,0 +1,1 @@
+This app can trigger flows based on incoming emails. You can also add conditions to only trigger flows when a mailed is recieved from a certain person based on name or email address, or when the subject and/or body contains some pre defined text.

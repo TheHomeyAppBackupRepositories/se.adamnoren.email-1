@@ -1,0 +1,12 @@
+{
+  "name": "se.adamnoren.email",
+  "version": "1.0.0",
+  "main": "app.js",
+  "devDependencies": {
+    "homey": "^2.9.7"
+  },
+  "dependencies": {
+    "imap": "^0.8.19",
+    "mailparser": "^3.0.1"
+  }
+}

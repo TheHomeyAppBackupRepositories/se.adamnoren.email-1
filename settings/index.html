@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- The '/homey.js' script must be included in your settings view to work -->
+    <script type="text/javascript" src="/homey.js" data-origin="settings"></script>
+    <style>
+      .field {
+        background-color: #FCFCFC;
+      }
+      .row {
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 data-i18n="settings.title">
+      <!--
+        This field will automatically be filled by a translated string with key 'settings.title'.
+        Read more about translations at Internationalization.
+      -->
+    </h1>
+    <p data-i18n="settings.subtitle">
+      <!-- This field will also be translated -->
+    </p>
+
+    <fieldset>
+      <legend>Settings</legend>
+      <div class="field row">
+        <label for="username">Username</label>
+        <input id="username" type="text" value="" />
+      </div>
+      <div class="field row">
+        <label for="password">Password</label>
+        <input id="password" type="password" value="" />
+      </div>
+      <div class="field row">
+        <label for="host">Host</label>
+        <input id="host" type="text" value="" />
+      </div>
+      <div class="field row">
+        <label for="port">Port</label>
+        <input id="port" type="number" value="" />
+      </div>
+      <div class="field row">
+        <label for="tls">TLS</label>
+        <input id="tls" type="checkbox" value="" />
+      </div>
+      <div class="field row">
+        <button id="testConnection">Test connection</button>
+      </div>
+    </fieldset>
+
+    <button id="save" class="right">Save changes</button>
+
+    <script type="text/javascript">
+      // a method named 'onHomeyReady' must be present in your code
+      const Imap = require('imap');
+      function onHomeyReady(Homey) {
+        // Tell Homey we're ready to be displayed
+        Homey.ready();
+
+        var providerElement = document.getElementById('provider');
+        var usernameElement = document.getElementById('username');
+        var passwordElement = document.getElementById('password');
+        var hostElement = document.getElementById('host');
+        var portElement = document.getElementById('port');
+        var tlsElement = document.getElementById('tls');
+        var saveElement = document.getElementById('save');
+        var testConnection = document.getElementById('testConnection');
+
+        Homey.get('username', function (err, username) {
+          if (err) return Homey.alert(err);
+          usernameElement.value = username;
+        });
+
+        Homey.get('password', function (err, password) {
+          if (err) return Homey.alert(err);
+          passwordElement.value = password;
+        });
+
+        Homey.get('host', function (err, host) {
+          if (err) return Homey.alert(err);
+          hostElement.value = host;
+        });
+
+        Homey.get('port', function (err, port) {
+          if (err) return Homey.alert(err);
+          portElement.value = port;
+        });
+
+        Homey.get('tls', function (err, tls) {
+          if (err) return Homey.alert(err);
+          tlsElement.checked = tls;
+        });
+
+        testConnection.addEventListener('click', function (e) {
+
+          let config = {
+            user: usernameElement.value,
+            password: passwordElement.value,
+            host: hostElement.value,
+            port: portElement.value,
+            tls: tlsElement.checked,
+          }
+
+          Homey.api('POST', '/testConnection', config, function (err, result) {
+            if (err) {
+              Homey.alert(JSON.stringify(err))
+            } else {
+              if (result.success) {
+                Homey.alert("Success! Your config looks good. Don't forget to save.")
+              } else {
+                Homey.alert(JSON.stringify(result.error))
+              }
+            }
+          });
+
+        });
+
+        saveElement.addEventListener('click', function (e) {
+
+          let error = null;
+
+          Homey.set('username', usernameElement.value, function (err) {
+            if (err) error = err;
+          });
+          Homey.set('password', passwordElement.value, function (err) {
+            if (err) error = err;
+          });
+          Homey.set('host', hostElement.value, function (err) {
+            if (err) error = err;
+          });
+          Homey.set('port', portElement.value, function (err) {
+            if (err) error = err;
+          });
+          Homey.set('tls', tlsElement.checked, function (err) {
+            if (err) error = err;
+          });
+          if (!error) {
+            Homey.alert('Saved!');
+          } else {
+            Homey.alert('Could not save settings');
+          }
+        });
+      }
+    </script>
+  </body>
+</html>
